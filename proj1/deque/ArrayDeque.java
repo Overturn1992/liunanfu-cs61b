@@ -106,6 +106,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         }
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) {
             return false;
@@ -116,22 +117,13 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         if (!(o instanceof Deque)) {
             return false;
         }
-        Iterator<T> it1 = this.iterator();
-        if(o instanceof ArrayDeque) {
-            ArrayDeque<T> another = (ArrayDeque<T>) o;
-            Iterator<T> it2 = another.iterator();
-            while (it1.hasNext() && it2.hasNext()) {
-                if (!it1.next().equals(it2.next())) {
-                    return false;
-                }
-            }
-        } else {
-            LinkedListDeque<T> another = (LinkedListDeque<T>) o;
-            Iterator<T> it2 = another.iterator();
-            while (it1.hasNext() && it2.hasNext()) {
-                if (!it1.next().equals(it2.next())) {
-                    return false;
-                }
+        Deque<T> another = (Deque<T>) o;
+        if (this.size != another.size()) {
+            return false;
+        }
+        for (int i = 0; i < size; i++) {
+            if (!this.get(i).equals(another.get(i))) {
+                return false;
             }
         }
         return true;
@@ -144,15 +136,6 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
             index++;
         }
         System.out.println();
-    }
-    public static void main(String[] args) {
-        ArrayDeque<Integer> deque = new ArrayDeque<Integer>();
-        for(int i = 0; i < 10; i++) {
-            deque.addFirst(i);
-        }
-        for(int i=0;i<10;i++) {
-            System.out.print(deque.removeLast()+" ");
-        }
     }
 }
 

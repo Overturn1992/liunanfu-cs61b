@@ -8,7 +8,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         return new dequeIterator();
     }
 
-    public class Node {
+    private class Node {
         T item;
         Node prev;
         Node next;
@@ -36,6 +36,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         }
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o == null) {
             return false;
@@ -46,30 +47,21 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         if (!(o instanceof Deque)) {
             return false;
         }
-        Iterator<T> it1 = this.iterator();
-        if(o instanceof ArrayDeque) {
-            ArrayDeque<T> another = (ArrayDeque<T>) o;
-            Iterator<T> it2 = another.iterator();
-            while (it1.hasNext() && it2.hasNext()) {
-                if (!it1.next().equals(it2.next())) {
-                    return false;
-                }
-            }
-        } else {
-            LinkedListDeque<T> another = (LinkedListDeque<T>) o;
-            Iterator<T> it2 = another.iterator();
-            while (it1.hasNext() && it2.hasNext()) {
-                if (!it1.next().equals(it2.next())) {
-                    return false;
-                }
+        Deque<T> another = (Deque<T>) o;
+        if (this.size != another.size()) {
+            return false;
+        }
+        for (int i = 0; i < size; i++) {
+            if (!this.get(i).equals(another.get(i))) {
+                return false;
             }
         }
         return true;
     }
 
-    public Node head;
-    public Node tail;
-    public int size;
+    private Node head;
+    private Node tail;
+    private int size;
 
     public LinkedListDeque() {
         head = new Node(null, null, null);
@@ -150,7 +142,7 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         return getRec(head.next, 0, index);
     }
 
-    public T getRec(Node curr, int i, int index) {
+    private T getRec(Node curr, int i, int index) {
         if (i == index) {
             return curr.item;
         } else {

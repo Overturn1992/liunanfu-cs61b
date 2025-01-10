@@ -12,7 +12,7 @@ public class GuitarString {
      * other topics in lecture on Friday.
      */
     private static final int SR = 44100;      // Sampling Rate
-    private static final double DECAY = 0.996; // energy decay factor
+    private static final double DECAY = .996; // energy decay factor
 
     /* Buffer for storing sound data. */
     private Deque<Double> buffer;
@@ -38,9 +38,10 @@ public class GuitarString {
      * the Karplus-Strong algorithm.
      */
     public void tic() {
-        Double current=buffer.removeFirst();
-        Double newValue=((current+buffer.get(0))*0.5)*DECAY;
-        buffer.addLast(newValue);
+        Double firstItem = buffer.removeFirst();
+        Double secondItem = buffer.get(0);
+        Double result = DECAY*(0.5*(firstItem+secondItem));
+        buffer.addLast(result);
     }
 
     /* Return the double at the front of the buffer. */
