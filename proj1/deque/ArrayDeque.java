@@ -3,11 +3,11 @@ package deque;
 import java.util.Iterator;
 
 public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
-    public T[] deque;
-    public int size;
-    public int front;
-    public int rear;
-    public int mid;
+    private T[] deque;
+    private int size;
+    private int front;
+    private int rear;
+    private int mid;
 
     public ArrayDeque() {
         deque = (T[]) new Object[8];
@@ -17,7 +17,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         rear = mid;
     }
 
-    public void resize(int newSize) {
+    private void resize(int newSize) {
         T[] newDeque = (T[]) new Object[newSize];
         int newMid = newDeque.length / 2;
         int leftLength = mid - 1 - front;
@@ -54,18 +54,24 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     }
 
     public T removeFirst() {
+        if (isEmpty()) {
+            return null;
+        }
         T ans = deque[++front];
         size--;
-        if (size < deque.length / 4 && size > 8) {
+        if (size < deque.length / 4 && deque.length > 8) {
             resize(deque.length / 2);
         }
         return ans;
     }
 
     public T removeLast() {
+        if (isEmpty()) {
+            return null;
+        }
         T ans = deque[--rear];
         size--;
-        if (size < deque.length / 4 && size > 8) {
+        if (size < deque.length / 4 && deque.length > 8) {
             resize(deque.length / 2);
         }
         return ans;
@@ -89,7 +95,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
 
         @Override
         public boolean hasNext() {
-            return index + 1 != rear;
+            return index != rear;
         }
 
         @Override

@@ -2,7 +2,7 @@ package deque;
 
 import java.util.Iterator;
 
-public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
+public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
     @Override
     public Iterator<T> iterator() {
         return new dequeIterator();
@@ -25,7 +25,7 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
 
         @Override
         public boolean hasNext() {
-            return current.next != tail;
+            return current != tail;
         }
 
         @Override
@@ -37,6 +37,9 @@ public class LinkedListDeque<T> implements Iterable<T>,Deque<T> {
     }
 
     public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
         if (!(o instanceof LinkedListDeque)) {
             return false;
         }
