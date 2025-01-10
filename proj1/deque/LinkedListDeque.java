@@ -40,18 +40,28 @@ public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
         if (o == null) {
             return false;
         }
-        if (!(o instanceof LinkedListDeque)) {
-            return false;
+        if (o == this) {
+            return true;
         }
-        LinkedListDeque another = (LinkedListDeque) o;
-        if (this.size != another.size) {
+        if (!(o instanceof Deque)) {
             return false;
         }
         Iterator<T> it1 = this.iterator();
-        Iterator<T> it2 = another.iterator();
-        while (it1.hasNext() && it2.hasNext()) {
-            if (!it1.next().equals(it2.next())) {
-                return false;
+        if(o instanceof ArrayDeque) {
+            ArrayDeque<T> another = (ArrayDeque<T>) o;
+            Iterator<T> it2 = another.iterator();
+            while (it1.hasNext() && it2.hasNext()) {
+                if (!it1.next().equals(it2.next())) {
+                    return false;
+                }
+            }
+        } else {
+            LinkedListDeque<T> another = (LinkedListDeque<T>) o;
+            Iterator<T> it2 = another.iterator();
+            while (it1.hasNext() && it2.hasNext()) {
+                if (!it1.next().equals(it2.next())) {
+                    return false;
+                }
             }
         }
         return true;

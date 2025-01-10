@@ -1,6 +1,7 @@
 package deque;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
 public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private T[] deque;
@@ -21,7 +22,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         T[] newDeque = (T[]) new Object[newSize];
         int newMid = newDeque.length / 2;
         int leftLength = mid - 1 - front;
-        int startIndex = newMid - leftLength;
+        int startIndex = newMid; //- leftLength;
         System.arraycopy(deque, front + 1, newDeque, startIndex, size);
         deque = newDeque;
         front = startIndex - 1;
@@ -112,18 +113,25 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof ArrayDeque)) {
-            return false;
-        }
-        ArrayDeque another = (ArrayDeque) o;
-        if (this.size != another.size) {
+        if (!(o instanceof Deque)) {
             return false;
         }
         Iterator<T> it1 = this.iterator();
-        Iterator<T> it2 = another.iterator();
-        while (it1.hasNext() && it2.hasNext()) {
-            if (!it1.next().equals(it2.next())) {
-                return false;
+        if(o instanceof ArrayDeque) {
+            ArrayDeque<T> another = (ArrayDeque<T>) o;
+            Iterator<T> it2 = another.iterator();
+            while (it1.hasNext() && it2.hasNext()) {
+                if (!it1.next().equals(it2.next())) {
+                    return false;
+                }
+            }
+        } else {
+            LinkedListDeque<T> another = (LinkedListDeque<T>) o;
+            Iterator<T> it2 = another.iterator();
+            while (it1.hasNext() && it2.hasNext()) {
+                if (!it1.next().equals(it2.next())) {
+                    return false;
+                }
             }
         }
         return true;
@@ -136,6 +144,15 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
             index++;
         }
         System.out.println();
+    }
+    public static void main(String[] args) {
+        ArrayDeque<Integer> deque = new ArrayDeque<Integer>();
+        for(int i = 0; i < 10; i++) {
+            deque.addFirst(i);
+        }
+        for(int i=0;i<10;i++) {
+            System.out.print(deque.removeLast()+" ");
+        }
     }
 }
 
