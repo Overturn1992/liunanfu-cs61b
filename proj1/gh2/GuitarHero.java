@@ -1,7 +1,6 @@
 package gh2;
 
 import deque.ArrayDeque;
-import deque.LinkedListDeque;
 import edu.princeton.cs.algs4.StdAudio;
 import edu.princeton.cs.algs4.StdDraw;
 

@@ -1,7 +1,6 @@
 package deque;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 
 public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
     private T[] deque;
@@ -22,7 +21,7 @@ public class ArrayDeque<T> implements Iterable<T>, Deque<T> {
         T[] newDeque = (T[]) new Object[newSize];
         int newMid = newDeque.length / 2;
         int leftLength = mid - 1 - front;
-        int startIndex = newMid; //- leftLength;
+        int startIndex = newMid;
         System.arraycopy(deque, front + 1, newDeque, startIndex, size);
         deque = newDeque;
         front = startIndex - 1;

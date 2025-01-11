@@ -30,7 +30,7 @@ public class TestArrayDequeEC {
                     continue;
                 }
                 message = message + "removeFirst()\\n";
-                Assert.assertEquals(message,deque1.removeLast(), deque2.removeLast());
+                Assert.assertEquals(message,deque1.removeFirst(), deque2.removeFirst());
             } else {
                 if (deque1.isEmpty() || deque2.isEmpty()) {
                     continue;
