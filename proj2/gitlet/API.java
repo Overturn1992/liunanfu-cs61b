@@ -182,11 +182,19 @@ public class API {
     }
 
     public static void branch(String args) {
+        List<String> branchSet = Utils.plainFilenamesIn(Repository.BRANCHES_DIR);
+        if (branchSet == null) {
+            return;
+        }
+        if(branchSet.contains(args)){
+            System.out.println("A branch with that name already exists.");
+            return;
+        }
         Head currHead = Head.loadHead();
         Branch newBranch = new Branch(args, currHead.getCurrCommit());
         newBranch.save();
-        currHead.changeBranch(newBranch.getBranchName());
-        currHead.save();
+//        currHead.changeBranch(newBranch.getBranchName());
+//        currHead.save();
     }
 
     public static void checkout_File(String args1, String args2) {
