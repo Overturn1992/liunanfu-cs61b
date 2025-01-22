@@ -146,10 +146,6 @@ public class Main {
                 API.commit(args[1]);
                 break;
             case "init":
-                if(!isInit()){
-                    System.out.print("Not in an initialized Gitlet directory.");
-                    return;
-                }
                 if (args.length != 1) {
                     System.out.print("Incorrect operands.");
                     return;
