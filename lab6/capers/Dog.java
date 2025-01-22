@@ -2,29 +2,40 @@ package capers;
 
 import java.io.File;
 import java.io.Serializable;
+
 import static capers.Utils.*;
 
-/** Represents a dog that can be serialized.
+/**
+ * Represents a dog that can be serialized.
+ *
  * @author TODO
-*/
-public class Dog { // TODO
+ */
+public class Dog implements Serializable { // TODO
 
-    /** Folder that dogs live in. */
-    static final File DOG_FOLDER = null; // TODO (hint: look at the `join`
-                                         //      function in Utils)
+    /**
+     * Folder that dogs live in.
+     */
+    static final File DOG_FOLDER = join(CapersRepository.CAPERS_FOLDER, "dogs");
 
-    /** Age of dog. */
+    /**
+     * Age of dog.
+     */
     private int age;
-    /** Breed of dog. */
+    /**
+     * Breed of dog.
+     */
     private String breed;
-    /** Name of dog. */
+    /**
+     * Name of dog.
+     */
     private String name;
 
     /**
      * Creates a dog object with the specified parameters.
-     * @param name Name of dog
+     *
+     * @param name  Name of dog
      * @param breed Breed of dog
-     * @param age Age of dog
+     * @param age   Age of dog
      */
     public Dog(String name, String breed, int age) {
         this.age = age;
@@ -39,8 +50,10 @@ public class Dog { // TODO
      * @return Dog read from file
      */
     public static Dog fromFile(String name) {
-        // TODO (hint: look at the Utils file)
-        return null;
+        File aimFile = new File(DOG_FOLDER, name);
+        Dog aimDog;
+        aimDog = readObject(aimFile, Dog.class);
+        return aimDog;
     }
 
     /**
@@ -48,7 +61,7 @@ public class Dog { // TODO
      */
     public void haveBirthday() {
         age += 1;
-        System.out.println(toString());
+        System.out.println(this.toString());
         System.out.println("Happy birthday! Woof! Woof!");
     }
 
@@ -56,14 +69,15 @@ public class Dog { // TODO
      * Saves a dog to a file for future use.
      */
     public void saveDog() {
-        // TODO (hint: don't forget dog names are unique)
+        File outputFile = new File(DOG_FOLDER, name);
+        Utils.writeObject(outputFile, this);
     }
 
     @Override
     public String toString() {
         return String.format(
-            "Woof! My name is %s and I am a %s! I am %d years old! Woof!",
-            name, breed, age);
+                "Woof! My name is %s and I am a %s! I am %d years old! Woof!",
+                name, breed, age);
     }
 
 }
