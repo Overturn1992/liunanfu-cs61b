@@ -16,8 +16,17 @@ public class API {
     }
 
     public static void commit(String args) {
+        Storge currStorge = Storge.loadStorge();
+        if (currStorge.getAddStorge().isEmpty() && currStorge.getRemoveStorge().isEmpty()) {
+            System.out.println("No changes added to the commit.");
+            return;
+        }
+        if (args.isBlank()) {
+            System.out.println("Please enter a commit message.");
+            return;
+        }
         Head currHead = Head.loadHead();
-        Commit newCommit = new Commit(args, currHead.getCurrCommit(), null);
+        Commit newCommit = new Commit(args, currHead.getCurrCommit(), null,currHead.getCurrBranch());
         currHead.changeCommit(newCommit.getCommitID());
         currHead.save();
         Branch currBranch = Branch.branchLoad(currHead.getCurrBranch());
@@ -72,7 +81,7 @@ public class API {
             } else {
                 System.out.println("===");
                 System.out.println("commit" + " " + currCommit.getCommitID());
-                System.out.println("Merge:" + " " + currCommit.getParent1().substring(0, 6) + " " + currCommit.getParent2().substring(0, 6));
+                System.out.println("Merge:" + " " + currCommit.getParent1().substring(0, 7) + " " + currCommit.getParent2().substring(0, 7));
                 System.out.println("Date:" + " " + currCommit.getTimeStamp());
                 System.out.println(currCommit.getMessage());
             }
@@ -181,6 +190,15 @@ public class API {
     }
 
     public static void checkout_File(String args1, String args2) {
+        if (args1.length() == 6) {
+            List<String> commitSet = Utils.plainFilenamesIn(Repository.COMMITS_DIR);
+            for (String commit : commitSet) {
+                if (commit.substring(0, 6).equals(args1)) {
+                    args1 = commit;
+                    break;
+                }
+            }
+        }
         Commit aimCommit = Commit.loadCommit(args1);
         if (aimCommit == null) {
             System.out.println("No commit with that id exists.");
@@ -259,6 +277,15 @@ public class API {
     }
 
     public static void reset(String args) {
+        if (args.length() == 6) {
+            List<String> commitSet = Utils.plainFilenamesIn(Repository.COMMITS_DIR);
+            for (String commit : commitSet) {
+                if (commit.substring(0, 6).equals(args)) {
+                    args = commit;
+                    break;
+                }
+            }
+        }
         Commit aimCommit = Commit.loadCommit(args);
         if (aimCommit == null) {
             System.out.println("No commit with that id exists.");
@@ -382,7 +409,7 @@ public class API {
                     }
                 }
             } else {
-                if(status_curr!=3&&status_aim!=3) {
+                if (status_curr != 3 && status_aim != 3) {
                     ConflictSet.add(file.getKey());
                 }
             }
@@ -390,45 +417,45 @@ public class API {
         HashSet<Blob> toSave = new HashSet<>();
         for (String file : ConflictSet) {
             Blob newBlob;
-            if(currCommit.getBlobs().containsKey(file)) {
-                newBlob=Blob.loadBlob(currCommit.getBlobs().get(file));
+            if (currCommit.getBlobs().containsKey(file)) {
+                newBlob = Blob.loadBlob(currCommit.getBlobs().get(file));
             } else {
-                newBlob=Blob.loadBlob(aimCommit.getBlobs().get(file));
+                newBlob = Blob.loadBlob(aimCommit.getBlobs().get(file));
             }
-            String currContent="";
-            if(currCommit.getBlobs().containsKey(file)) {
-                currContent=new String(Blob.loadBlob(currCommit.getBlobs().get(file)).getContent());
+            String currContent = "";
+            if (currCommit.getBlobs().containsKey(file)) {
+                currContent = new String(Blob.loadBlob(currCommit.getBlobs().get(file)).getContent());
             }
-            String aimContent="";
-            if(aimCommit.getBlobs().containsKey(file)) {
-                aimContent=new String(Blob.loadBlob(aimCommit.getBlobs().get(file)).getContent());
+            String aimContent = "";
+            if (aimCommit.getBlobs().containsKey(file)) {
+                aimContent = new String(Blob.loadBlob(aimCommit.getBlobs().get(file)).getContent());
             }
-            String newContent="<<<<<<< HEAD\n"+"contents of file in current branch"+currContent+"=======\n"+"contents of file in given branch"+aimContent+">>>>>>>\n";
+            String newContent = "<<<<<<< HEAD\n" + "contents of file in current branch" + currContent + "=======\n" + "contents of file in given branch" + aimContent + ">>>>>>>\n";
             newBlob.changeContent(newContent.getBytes(StandardCharsets.UTF_8));
-            currStorge.unsafeAdd(file,newBlob.getSHA1());
+            currStorge.unsafeAdd(file, newBlob.getSHA1());
             toSave.add(newBlob);
         }
         String message = "Merged" + " " + aimBranch.getBranchName() + " " + "into" + " " + currBranch.getBranchName() + ".";
         currStorge.saveStorge();
-        for(Blob blob : toSave){
+        for (Blob blob : toSave) {
             blob.save();
         }
-        Commit mergeCommit=new Commit(message,currCommit.getCommitID(),aimCommit.getCommitID());
-        if(checkout_Commit(mergeCommit,currCommit)){
-            if(!ConflictSet.isEmpty()){
+        Commit mergeCommit = new Commit(message, currCommit.getCommitID(), aimCommit.getCommitID(), currBranch.getBranchName());
+        if (checkout_Commit(mergeCommit, currCommit)) {
+            if (!ConflictSet.isEmpty()) {
                 System.out.println("Encountered a merge conflict.");
             }
 
             mergeCommit.saveCommit();
             currBranch.changeHead(mergeCommit.getCommitID());
             currBranch.save();
-            Head currHead=Head.loadHead();
+            Head currHead = Head.loadHead();
             currHead.changeCommit(mergeCommit.getCommitID());
             currHead.save();
             currStorge.saveStorge();
         } else {
-            for(Blob blob : toSave){
-                Utils.restrictedDelete(Utils.join(Repository.BLOBS_DIR,blob.getSHA1()));
+            for (Blob blob : toSave) {
+                Utils.restrictedDelete(Utils.join(Repository.BLOBS_DIR, blob.getSHA1()));
             }
         }
     }

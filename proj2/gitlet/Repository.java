@@ -37,7 +37,7 @@ public class Repository {
         }
         Storge gitStorge = new Storge();
         gitStorge.saveStorge();
-        Commit initCommit = new Commit("initial commit", null, null);
+        Commit initCommit = new Commit("initial commit", null, null,"master");
         initCommit.saveCommit();
         Branch master = new Branch("master", initCommit.getCommitID());
         master.save();

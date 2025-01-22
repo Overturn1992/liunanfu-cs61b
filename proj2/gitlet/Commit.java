@@ -34,12 +34,13 @@ public class Commit implements Serializable {
         return parent2;
     }
 
-    public Commit(String message, String parent1, String parent2) {
+    public Commit(String message, String parent1, String parent2 ,String branchName) {
         this.message = message;
         this.parent1 = parent1;
         this.parent2 = parent2;
         this.timeStamp = TimeStampFormat();
         this.BlobsMap = new TreeMap<>();
+        this.branchName = branchName;
         updateBlob();
         this.commitID = sha1ToCommitID();
     }
