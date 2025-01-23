@@ -52,7 +52,7 @@ public class API {
             } else {
                 System.out.println("===");
                 System.out.println("commit" + " " + currCommit.getCommitID());
-                System.out.println("Merge:" + " " + currCommit.getParent1().substring(0, 6) + " " + currCommit.getParent2().substring(0, 6));
+                System.out.println("Merge:" + " " + currCommit.getParent1().substring(0, 7) + " " + currCommit.getParent2().substring(0, 7));
                 System.out.println("Date:" + " " + currCommit.getTimeStamp());
                 System.out.println(currCommit.getMessage());
             }
@@ -198,10 +198,10 @@ public class API {
     }
 
     public static void checkout_File(String args1, String args2) {
-        if (args1.length() == 6) {
+        if (args1.length() <40) {
             List<String> commitSet = Utils.plainFilenamesIn(Repository.COMMITS_DIR);
             for (String commit : commitSet) {
-                if (commit.substring(0, 6).equals(args1)) {
+                if (commit.startsWith(args1)) {
                     args1 = commit;
                     break;
                 }
@@ -281,14 +281,14 @@ public class API {
         if (aimBranch.getBranchName().equals(Head.loadHead().getCurrBranch())) {
             System.out.println("Cannot remove the current branch.");
         }
-        Utils.restrictedDelete(Utils.join(Repository.BRANCHES_DIR, aimBranch.getBranchName()));
+        Utils.join(Repository.BRANCHES_DIR, aimBranch.getBranchName()).delete();
     }
 
     public static void reset(String args) {
-        if (args.length() == 6) {
+        if (args.length() <40) {
             List<String> commitSet = Utils.plainFilenamesIn(Repository.COMMITS_DIR);
             for (String commit : commitSet) {
-                if (commit.substring(0, 6).equals(args)) {
+                if (commit.startsWith(args)) {
                     args = commit;
                     break;
                 }
