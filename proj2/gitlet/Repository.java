@@ -2,7 +2,6 @@ package gitlet;
 
 import java.io.File;
 import java.io.IOException;
-
 import static gitlet.Utils.*;
 
 public class Repository {
@@ -14,6 +13,7 @@ public class Repository {
     public static final File BRANCHES_DIR = join(GITLET_DIR, "Branches");
     public static final File HEAD_FILE = join(GITLET_DIR, "Head");
     public static final File STORAGE_FILE = join(GITLET_DIR, "Storage");
+    public static final File REMOTE_DIR = join(GITLET_DIR, "Remote");
 
     public static void init() {
         if (GITLET_DIR.exists()) {
@@ -25,6 +25,7 @@ public class Repository {
         COMMITS_DIR.mkdir();
         BLOBS_DIR.mkdir();
         BRANCHES_DIR.mkdir();
+        REMOTE_DIR.mkdir();
         try {
             HEAD_FILE.createNewFile();
         } catch (IOException e) {

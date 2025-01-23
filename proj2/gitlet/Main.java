@@ -8,6 +8,27 @@ public class Main {
         }
         String firstArg = args[0];
         switch (firstArg) {
+            case "rm-remote":
+                if(!isInit()){
+                    System.out.print("Not in an initialized Gitlet directory.");
+                    return;
+                }
+                if (args.length != 2) {
+                    System.out.print("Incorrect operands.");
+                    return;
+                }
+                API.removeRemote(args[1]);
+            case "add-remote":
+                if(!isInit()){
+                    System.out.print("Not in an initialized Gitlet directory.");
+                    return;
+                }
+                if (args.length != 3) {
+                    System.out.print("Incorrect operands.");
+                    return;
+                }
+                API.addRemote(args[1], args[2]);
+                break;
             case "merge":
                 if(!isInit()){
                     System.out.print("Not in an initialized Gitlet directory.");

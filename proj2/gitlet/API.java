@@ -26,7 +26,7 @@ public class API {
             return;
         }
         Head currHead = Head.loadHead();
-        Commit newCommit = new Commit(args, currHead.getCurrCommit(), null,currHead.getCurrBranch());
+        Commit newCommit = new Commit(args, currHead.getCurrCommit(), null, currHead.getCurrBranch());
         currHead.changeCommit(newCommit.getCommitID());
         currHead.save();
         Branch currBranch = Branch.branchLoad(currHead.getCurrBranch());
@@ -186,19 +186,17 @@ public class API {
         if (branchSet == null) {
             return;
         }
-        if(branchSet.contains(args)){
+        if (branchSet.contains(args)) {
             System.out.println("A branch with that name already exists.");
             return;
         }
         Head currHead = Head.loadHead();
         Branch newBranch = new Branch(args, currHead.getCurrCommit());
         newBranch.save();
-//        currHead.changeBranch(newBranch.getBranchName());
-//        currHead.save();
     }
 
     public static void checkout_File(String args1, String args2) {
-        if (args1.length() <40) {
+        if (args1.length() < 40) {
             List<String> commitSet = Utils.plainFilenamesIn(Repository.COMMITS_DIR);
             for (String commit : commitSet) {
                 if (commit.startsWith(args1)) {
@@ -285,7 +283,7 @@ public class API {
     }
 
     public static void reset(String args) {
-        if (args.length() <40) {
+        if (args.length() < 40) {
             List<String> commitSet = Utils.plainFilenamesIn(Repository.COMMITS_DIR);
             for (String commit : commitSet) {
                 if (commit.startsWith(args)) {
@@ -309,7 +307,7 @@ public class API {
         currStorge.clearStorge();
         currStorge.saveStorge();
         currHead.changeCommit(aimCommit.getCommitID());
-        if(!currHead.getCurrBranch().equals(aimCommit.getBranchName())){
+        if (!currHead.getCurrBranch().equals(aimCommit.getBranchName())) {
             currHead.changeBranch(aimBranch.getBranchName());
         }
         currHead.save();
@@ -351,12 +349,12 @@ public class API {
         bfsQueue.add(currCommit.getCommitID());
         currParentSet.add(currCommit.getCommitID());
         while (!bfsQueue.isEmpty()) {
-            Commit qCommit=Commit.loadCommit(bfsQueue.poll());
-            if(qCommit.getParent1()!=null){
+            Commit qCommit = Commit.loadCommit(bfsQueue.poll());
+            if (qCommit.getParent1() != null) {
                 currParentSet.add(qCommit.getParent1());
                 bfsQueue.add(qCommit.getParent1());
             }
-            if(qCommit.getParent2()!=null){
+            if (qCommit.getParent2() != null) {
                 currParentSet.add(qCommit.getParent2());
                 bfsQueue.add(qCommit.getParent2());
             }
@@ -364,15 +362,15 @@ public class API {
         bfsQueue.add(aimCommit.getCommitID());
         Commit commonCommit = null;
         while (!bfsQueue.isEmpty()) {
-            Commit qCommit=Commit.loadCommit(bfsQueue.poll());
-            if(currParentSet.contains(qCommit.getCommitID())){
-                commonCommit=Commit.loadCommit(qCommit.getCommitID());
+            Commit qCommit = Commit.loadCommit(bfsQueue.poll());
+            if (currParentSet.contains(qCommit.getCommitID())) {
+                commonCommit = Commit.loadCommit(qCommit.getCommitID());
                 break;
             } else {
-                if(qCommit.getParent1()!=null){
+                if (qCommit.getParent1() != null) {
                     bfsQueue.add(qCommit.getParent1());
                 }
-                if(qCommit.getParent2()!=null){
+                if (qCommit.getParent2() != null) {
                     bfsQueue.add(qCommit.getParent2());
                 }
             }
@@ -398,7 +396,6 @@ public class API {
                     continue;
                 }
                 if (!file.getValue().equals(commonCommit_fileKey) && currCommit.getBlobs().containsKey(file.getKey()) && currCommit.getBlobs().get(file.getKey()).equals(commonCommit_fileKey)) {
-//                    checkout_File(aimCommit.getCommitID(), file.getKey());
                     currStorge.unsafeAdd(file.getKey(), file.getValue());
                     continue;
                 }
@@ -452,7 +449,7 @@ public class API {
             if (aimCommit.getBlobs().containsKey(file)) {
                 aimContent = new String(Blob.loadBlob(aimCommit.getBlobs().get(file)).getContent());
             }
-            String newContent = "<<<<<<< HEAD\n"  + currContent + "=======\n" +  aimContent + ">>>>>>>\n";
+            String newContent = "<<<<<<< HEAD\n" + currContent + "=======\n" + aimContent + ">>>>>>>\n";
             newBlob.changeContent(newContent.getBytes(StandardCharsets.UTF_8));
             currStorge.unsafeAdd(file, newBlob.getSHA1());
             toSave.add(newBlob);
@@ -484,5 +481,77 @@ public class API {
             currStorge.saveStorge();
             reset(currCommit.getCommitID());
         }
+    }
+
+    public static void addRemote(String args1, String args2) {
+        List<String> remoteNames = Utils.plainFilenamesIn(Repository.REMOTE_DIR);
+        if (remoteNames.contains(args1)) {
+            System.out.println("A remote with that name already exists.");
+            return;
+        }
+        args2 = args2.replace("/", File.separator);
+        Remote newRemote = new Remote(args1, args2);
+        newRemote.save();
+    }
+
+    public static void removeRemote(String args) {
+        List<String> remoteNames = Utils.plainFilenamesIn(Repository.REMOTE_DIR);
+        if (!remoteNames.contains(args)) {
+            System.out.println("A remote with that name does not exist.");
+            return;
+        }
+        Utils.join(Repository.REMOTE_DIR, args).delete();
+    }
+
+    public static void push(String args1, String args2) {
+        List<String> remoteNames = Utils.plainFilenamesIn(Repository.REMOTE_DIR);
+        if (!remoteNames.contains(args1)) {
+            System.out.println("A remote with that name does not exist.");
+            return;
+        }
+        Remote aimRemote = Remote.load(args1);
+        File aimPath = new File(aimRemote.getRemotePath());
+        if (!aimPath.exists()) {
+            System.out.println("Remote directory not found.");
+            return;
+        }
+        File remoteBranch_DIR = Utils.join(aimPath, "Branches");
+        File remoteObjects_DIR = Utils.join(aimPath, "Objects");
+        File remoteCommits_DIR = Utils.join(remoteObjects_DIR, "Commits");
+        File remoteBlobs_DIR = Utils.join(remoteObjects_DIR, "Blobs");
+        Branch remoteBranch = Utils.readObject(Utils.join(remoteBranch_DIR, args2), Branch.class);
+        Head currHead = Head.loadHead();
+        List<String> CommitSet = new ArrayList<>();
+        Commit currCommit = Commit.loadCommit(currHead.getCurrCommit());
+        Commit ptrCommit=currCommit;
+        boolean flag=false;
+        while(ptrCommit.getParent1()!=null) {
+            if(ptrCommit.getCommitID().equals(remoteBranch.getBranchHead())){
+                flag=true;
+                break;
+            }
+            CommitSet.add(ptrCommit.getCommitID());
+            ptrCommit=Commit.loadCommit(ptrCommit.getParent1());
+        }
+        if (!flag) {
+            System.out.println("Please pull down remote changes before pushing.");
+            return;
+        }
+        for(String toAdd : CommitSet) {
+            Commit toAddCommit = Commit.loadCommit(toAdd);
+            File newCommit=Utils.join(remoteCommits_DIR,toAddCommit.getCommitID());
+            Utils.writeObject(newCommit,currCommit);
+            for(Map.Entry<String,String> blob:toAddCommit.getBlobs().entrySet()) {
+                File newBlob=Utils.join(remoteBlobs_DIR,blob.getValue());
+                Blob replaceBlob=Blob.loadBlob(blob.getValue());
+                Utils.writeObject(newBlob,replaceBlob);
+            }
+        }
+        remoteBranch.changeHead(currCommit.getCommitID());
+        Utils.writeObject(Utils.join(remoteBranch_DIR, args2),Branch.class);
+        Head remoteHead=Utils.readObject(Utils.join(aimPath, "Head"), Head.class);
+        remoteHead.changeCommit(currCommit.getCommitID());
+        remoteHead.changeBranch(args2);
+        Utils.writeObject(Utils.join(aimPath,"Head"),Head.class);
     }
 }

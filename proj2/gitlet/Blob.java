@@ -20,6 +20,9 @@ public class Blob implements Serializable {
     }
 
     public static Blob loadBlob(String fileName) {
+        if(!join(Repository.BLOBS_DIR,fileName).exists()){
+            return null;
+        }
         return Utils.readObject(join(Repository.BLOBS_DIR, fileName), Blob.class);
     }
 
@@ -40,12 +43,6 @@ public class Blob implements Serializable {
         Utils.writeObject(outputFile, this);
     }
 
-    public static Blob load(String blobID){
-        if(!join(Repository.BLOBS_DIR,blobID).exists()){
-            return null;
-        }
-        return Utils.readObject(join(Repository.BLOBS_DIR, blobID), Blob.class);
-    }
 
     public void changeContent(byte[] content) {
         this.content = content;
