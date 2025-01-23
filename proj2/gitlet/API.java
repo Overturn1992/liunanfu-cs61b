@@ -473,6 +473,7 @@ public class API {
             }
             currStorge.clearStorge();
             currStorge.saveStorge();
+            reset(currCommit.getCommitID());
         }
     }
 }
