@@ -347,24 +347,32 @@ public class API {
         Commit aimCommit = Commit.loadCommit(aimBranch.getBranchHead());
         Commit currCommit = Commit.loadCommit(currBranch.getBranchHead());
         Queue<String> bfsQueue = new LinkedList<>();
+        HashSet<String> currParentSet = new HashSet<>();
         bfsQueue.add(currCommit.getCommitID());
-        bfsQueue.add(aimCommit.getCommitID());
-        Commit commonCommit=null;
+        currParentSet.add(currCommit.getCommitID());
         while (!bfsQueue.isEmpty()) {
             Commit qCommit=Commit.loadCommit(bfsQueue.poll());
             if(qCommit.getParent1()!=null){
-                if(bfsQueue.contains(qCommit.getParent1())){
-                    commonCommit=Commit.loadCommit(qCommit.getParent1());
-                    break;
-                } else {
-                    bfsQueue.add(qCommit.getParent1());
-                }
+                currParentSet.add(qCommit.getParent1());
+                bfsQueue.add(qCommit.getParent1());
             }
             if(qCommit.getParent2()!=null){
-                if(bfsQueue.contains(qCommit.getParent2())){
-                    commonCommit=Commit.loadCommit(qCommit.getParent2());
-                    break;
-                } else {
+                currParentSet.add(qCommit.getParent2());
+                bfsQueue.add(qCommit.getParent2());
+            }
+        }
+        bfsQueue.add(aimCommit.getCommitID());
+        Commit commonCommit = null;
+        while (!bfsQueue.isEmpty()) {
+            Commit qCommit=Commit.loadCommit(bfsQueue.poll());
+            if(currParentSet.contains(qCommit.getCommitID())){
+                commonCommit=Commit.loadCommit(qCommit.getCommitID());
+                break;
+            } else {
+                if(qCommit.getParent1()!=null){
+                    bfsQueue.add(qCommit.getParent1());
+                }
+                if(qCommit.getParent2()!=null){
                     bfsQueue.add(qCommit.getParent2());
                 }
             }
