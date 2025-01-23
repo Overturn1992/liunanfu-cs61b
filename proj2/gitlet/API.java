@@ -554,4 +554,23 @@ public class API {
         remoteHead.changeBranch(args2);
         Utils.writeObject(Utils.join(aimPath,"Head"),Head.class);
     }
+
+    public static void fetch(String args1, String args2) {
+        Remote aimRemote = Remote.load(args1);
+        File aimPath = new File(aimRemote.getRemotePath());
+        if (!aimPath.exists()) {
+            System.out.println("Remote directory not found.");
+            return;
+        }
+        File remoteBranch_DIR = Utils.join(aimPath, "Branches");
+        File remoteObjects_DIR = Utils.join(aimPath, "Objects");
+        File remoteCommits_DIR = Utils.join(remoteObjects_DIR, "Commits");
+        File remoteBlobs_DIR = Utils.join(remoteObjects_DIR, "Blobs");
+        List<String> RemoteBranches = Utils.plainFilenamesIn(remoteBranch_DIR);
+        if(!RemoteBranches.contains(args2)){
+            System.out.println("That remote does not have that branch.");
+            return;
+        }
+
+    }
 }
