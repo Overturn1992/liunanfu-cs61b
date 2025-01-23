@@ -344,30 +344,31 @@ public class API {
             System.out.println("You have uncommitted changes.");
             return;
         }
-        ArrayList<String> aimList = new ArrayList<>();
-        HashSet<String> currSet = new HashSet<>();
         Commit aimCommit = Commit.loadCommit(aimBranch.getBranchHead());
         Commit currCommit = Commit.loadCommit(currBranch.getBranchHead());
-        Commit ptr_aim = aimCommit;
-        Commit ptr_curr = currCommit;
-        while (ptr_aim.getParent1() != null) {
-            aimList.add(ptr_aim.getParent1());
-            ptr_aim = Commit.loadCommit(ptr_aim.getParent1());
-        }
-        aimList.add(ptr_aim.getCommitID());
-        while (ptr_curr.getParent1() != null) {
-            currSet.add(ptr_curr.getParent1());
-            ptr_curr = Commit.loadCommit(ptr_curr.getParent1());
-        }
-        currSet.add(ptr_curr.getCommitID());
-        Commit commonCommit = null;
-        for (String common : aimList) {
-            if (currSet.contains(common)) {
-                commonCommit = Commit.loadCommit(common);
-                break;
+        Queue<String> bfsQueue = new LinkedList<>();
+        bfsQueue.add(currCommit.getCommitID());
+        bfsQueue.add(aimCommit.getCommitID());
+        Commit commonCommit=null;
+        while (!bfsQueue.isEmpty()) {
+            Commit qCommit=Commit.loadCommit(bfsQueue.poll());
+            if(qCommit.getParent1()!=null){
+                if(bfsQueue.contains(qCommit.getParent1())){
+                    commonCommit=Commit.loadCommit(qCommit.getParent1());
+                    break;
+                } else {
+                    bfsQueue.add(qCommit.getParent1());
+                }
+            }
+            if(qCommit.getParent2()!=null){
+                if(bfsQueue.contains(qCommit.getParent2())){
+                    commonCommit=Commit.loadCommit(qCommit.getParent2());
+                    break;
+                } else {
+                    bfsQueue.add(qCommit.getParent2());
+                }
             }
         }
-
         if (commonCommit.getCommitID().equals(aimCommit.getCommitID())) {
             System.out.println("Given branch is an ancestor of the current branch.");
             return;
