@@ -471,6 +471,8 @@ public class API {
             for (Blob blob : toSave) {
                 Utils.restrictedDelete(Utils.join(Repository.BLOBS_DIR, blob.getSHA1()));
             }
+            currStorge.clearStorge();
+            currStorge.saveStorge();
         }
     }
 }
