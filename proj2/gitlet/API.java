@@ -309,7 +309,6 @@ public class API {
         currStorge.clearStorge();
         currStorge.saveStorge();
         currHead.changeCommit(aimCommit.getCommitID());
-        currHead.save();
         if(!currHead.getCurrBranch().equals(aimCommit.getBranchName())){
             currHead.changeBranch(aimBranch.getBranchName());
         }
@@ -466,6 +465,7 @@ public class API {
             Head currHead = Head.loadHead();
             currHead.changeCommit(mergeCommit.getCommitID());
             currHead.save();
+            currStorge.clearStorge();
             currStorge.saveStorge();
         } else {
             for (Blob blob : toSave) {
