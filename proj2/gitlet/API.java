@@ -308,6 +308,12 @@ public class API {
         Storge currStorge = Storge.loadStorge();
         currStorge.clearStorge();
         currStorge.saveStorge();
+        currHead.changeCommit(aimCommit.getCommitID());
+        currHead.save();
+        if(!currHead.getCurrBranch().equals(aimCommit.getBranchName())){
+            currHead.changeBranch(aimBranch.getBranchName());
+        }
+        currHead.save();
     }
 
     private static int changeType(Commit textCommit, String fileName, String commonKey) {
