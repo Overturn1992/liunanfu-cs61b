@@ -443,7 +443,7 @@ public class API {
             if (aimCommit.getBlobs().containsKey(file)) {
                 aimContent = new String(Blob.loadBlob(aimCommit.getBlobs().get(file)).getContent());
             }
-            String newContent = "<<<<<<< HEAD\n" + "contents of file in current branch" + currContent + "=======\n" + "contents of file in given branch" + aimContent + ">>>>>>>\n";
+            String newContent = "<<<<<<< HEAD\n"  + currContent + "=======\n" +  aimContent + ">>>>>>>\n";
             newBlob.changeContent(newContent.getBytes(StandardCharsets.UTF_8));
             currStorge.unsafeAdd(file, newBlob.getSHA1());
             toSave.add(newBlob);
